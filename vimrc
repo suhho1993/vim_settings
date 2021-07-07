@@ -94,6 +94,8 @@ let g:SrcExpl_pluginList=["__Tag_List__","_NERD_tree_","Source_Explorer"]
 let g:SrcExpl_searchLocalDef=1
 let g:SrcExpl_isUpdateTags=0
 let g:SrcExpl_updateTagsCmd="ctags --sort=foldcase -R ."
+let g:easytags_async=1
+
 let g:SrcExpl_updateTagsKey="<F12>"
 
 
@@ -175,3 +177,17 @@ let g:neocomplcache_enable_at_startup = 1
 highlight GitGutterAdd    guifg=#009900 ctermfg=10
 highlight GitGutterChange guifg=#bbbb00 ctermfg=11
 highlight GitGutterDelete guifg=#ff2222 ctermfg=9
+
+function! LoadCscope()
+    let db = findfile("cscope.out", ".;")
+    if (!empty(db))
+        let path = strpart(db, 0, match(db, "/cscope.out$"))
+        set nocscopeverbose " suppress 'duplicate connection' error
+        exe "cs add " . db . " " . path
+        set cscopeverbose
+        " else add the database pointed to by environment variable
+        elseif $CSCOPE_DB != ""
+           cs add $CSCOPE_DB
+        endif
+    endfunction
+    au BufEnter /* call LoadCscope()
